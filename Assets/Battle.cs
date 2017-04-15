@@ -7,7 +7,7 @@ using System.Text;
 using System.IO;
 
 public class Battle : MonoBehaviour {
-	string server = "localhost";
+	string server = "popbits.co.jp";
 	int port = 8080;
 
 	TcpClient client;
