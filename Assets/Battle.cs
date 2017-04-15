@@ -16,6 +16,8 @@ public class Battle : MonoBehaviour {
 
 	int f_count = 0;
 
+	public GameObject Soldier;
+
 	// Use this for initialization
 	void Start () {
 		InitSock ();
@@ -32,10 +34,10 @@ public class Battle : MonoBehaviour {
 	void Update () {
 		// 0フレーム目は相手と同期を取ってカウンタを合わせる
 		if (f_count == 0) {
-			ReadyAndWaitOponent ();
+			//ReadyAndWaitOponent ();
 		} else {
 			HandleTap ();
-			CommandAndWaitOponent ();
+			//CommandAndWaitOponent ();
 		}
 		f_count++;
 	}
@@ -72,15 +74,13 @@ public class Battle : MonoBehaviour {
 	void CheckPosition (Vector3 position)
 	{
 		Debug.Log ("tapped");
-
-		byte[] dgram = Encoding.UTF8.GetBytes("hello!\n");
-		writer.Write(dgram);
-
 		Ray ray = Camera.main.ScreenPointToRay(position);
 		RaycastHit hit = new RaycastHit();
 
-		if (Physics.Raycast(ray, out hit)){
+		if (Physics.Raycast(ray, out hit, 2000)){
 			Debug.Log ("hit something");
+			Debug.Log (hit.point);
+			GameObject soldier = (GameObject) Instantiate(Soldier, hit.point, new Quaternion());
 		}
 	}
 
