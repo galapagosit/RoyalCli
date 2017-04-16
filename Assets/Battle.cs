@@ -31,6 +31,11 @@ public class Battle : MonoBehaviour {
 	public GameObject Soldier;
 	public Frame currentFrame;
 
+	void Awake() {
+		QualitySettings.vSyncCount = 0;
+		Application.targetFrameRate = 30; //30FPSに設定
+	}
+
 	// Use this for initialization
 	void Start () {
 		InitSock ();
@@ -115,14 +120,12 @@ public class Battle : MonoBehaviour {
 		string message = JsonUtility.ToJson (currentFrame);
 		Debug.Log (message);
 		byte[] dgram = Encoding.UTF8.GetBytes(message);
-		writer.Write(dgram);
 
+		writer.Write(dgram);
 		// 両方のプレイヤーのフレームデータを処理
-		Debug.Log ("waiting...");
 		byte[] bs = new byte[1024];
 		reader.Read(bs, 0, 1024);
 		string recv_message = Encoding.UTF8.GetString(bs);
-		Debug.Log ("recv_message:" + recv_message);
 
 		string[] frames = recv_message.Split('#');
 

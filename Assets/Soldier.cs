@@ -18,7 +18,7 @@ public class Soldier : MonoBehaviour {
 		if (dis < 100) {
 			animator.SetBool ("attack", true);
 		} else {
-			transform.position += transform.forward * 1 * 1;
+			transform.position += transform.forward * 1 * 2;
 			animator.SetBool ("attack", false);
 		}
 	}
