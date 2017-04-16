@@ -282,7 +282,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 829cbe273a4c9425eb743212b9c33b4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  castle1: {fileID: 782116209}
+  castle2: {fileID: 341714313}
   Soldier: {fileID: 1207564912109232, guid: fc45f144d7d374e44831822863a41bda, type: 2}
+  currentFrame:
+    f_count: 0
+    point: {x: 0, y: 0, z: 0}
+    placed: 0
 --- !u!4 &403544175
 Transform:
   m_ObjectHideFlags: 0

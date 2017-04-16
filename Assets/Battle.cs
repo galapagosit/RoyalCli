@@ -25,6 +25,9 @@ public class Battle : MonoBehaviour {
 
 	int f_count = 0;
 
+	public GameObject castle1;
+	public GameObject castle2;
+
 	public GameObject Soldier;
 	public Frame currentFrame;
 
@@ -100,6 +103,10 @@ public class Battle : MonoBehaviour {
 				point = hit.point,
 				placed = true
 			};
+
+//			GameObject soldier = (GameObject)Instantiate (Soldier, hit.point, new Quaternion ());
+//			Soldier s = soldier.GetComponent<Soldier>();
+//			s.targetCastle = castle2;
 		}
 	}
 
@@ -123,12 +130,16 @@ public class Battle : MonoBehaviour {
 		Frame frame1 = JsonUtility.FromJson<Frame> (frames[0]);
 		if (frame1.placed) {
 			GameObject soldier = (GameObject)Instantiate (Soldier, frame1.point, new Quaternion ());
+			Soldier s = soldier.GetComponent<Soldier>();
+			s.targetCastle = castle2;
 		}
 
 		// プレイヤー2のフレームデータを処理
 		Frame frame2 = JsonUtility.FromJson<Frame> (frames[1]);
 		if (frame2.placed) {
 			GameObject soldier = (GameObject)Instantiate (Soldier, frame2.point, new Quaternion ());
+			Soldier s = soldier.GetComponent<Soldier>();
+			s.targetCastle = castle1;
 		}
 	}
 }
