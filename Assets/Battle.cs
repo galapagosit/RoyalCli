@@ -111,11 +111,6 @@ public class Battle : MonoBehaviour {
 	void RecvFrame () {
 		// 両方のプレイヤーのフレームデータを処理
 		string msg = frameWorker.recv ();
-		if (msg == null) {
-			Debug.Log("msg is null");
-			Time.timeScale = 0;
-			return;
-		}
 		Debug.Log ("f_count:" + f_count + " msg:" + msg);
 		string[] frames = msg.Split('#');
 

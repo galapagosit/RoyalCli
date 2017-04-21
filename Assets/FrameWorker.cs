@@ -22,7 +22,7 @@ public class FrameWorker {
 	StreamWriter writer;
 
 	BlockingQueue<string> send_queue;
-	Queue<string> recv_queue;
+	BlockingQueue<string> recv_queue;
 
 	Thread send_thread;
 	Thread recv_thread;
@@ -31,7 +31,7 @@ public class FrameWorker {
 		initSock ();
 
 		send_queue = new BlockingQueue<string>();
-		recv_queue = new Queue<string>();
+		recv_queue = new BlockingQueue<string>();
 
 		send_thread = new Thread(sender);
 		send_thread.Start();
@@ -53,11 +53,7 @@ public class FrameWorker {
 	}
 
 	public string recv () {
-		if (recv_queue.Count > 0) {
-			return recv_queue.Dequeue ();
-		} else {
-			return null;
-		}
+		return recv_queue.Dequeue ();
 	}
 
 	void sender () {
