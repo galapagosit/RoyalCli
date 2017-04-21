@@ -21,7 +21,7 @@ public class FrameWorker {
 	StreamReader reader;
 	StreamWriter writer;
 
-	Queue<string> send_queue;
+	BlockingQueue<string> send_queue;
 	Queue<string> recv_queue;
 
 	Thread send_thread;
@@ -30,7 +30,7 @@ public class FrameWorker {
 	public FrameWorker () {
 		initSock ();
 
-		send_queue = new Queue<string>();
+		send_queue = new BlockingQueue<string>();
 		recv_queue = new Queue<string>();
 
 		send_thread = new Thread(sender);
@@ -49,10 +49,7 @@ public class FrameWorker {
 	}
 
 	public void send (string s) {
-		lock (send_queue) {
-			send_queue.Enqueue (s);
-			Monitor.PulseAll (send_queue);
-		}
+		send_queue.Enqueue (s);
 	}
 
 	public string recv () {
@@ -65,16 +62,9 @@ public class FrameWorker {
 
 	void sender () {
 		while (!shutdown) {
-			lock (send_queue) {
-				Monitor.Wait (send_queue);
-				if (send_queue.Count > 0) {
-					string s = send_queue.Dequeue ();
-					Debug.Log ("send:" + s);
-					writer.WriteLine(s);
-				} else {
-					Debug.Log ("send_queue is empty...");
-				}
-			}
+			string s = send_queue.Dequeue ();
+			Debug.Log ("send:" + s);
+			writer.WriteLine(s);
 		}
 	}
 

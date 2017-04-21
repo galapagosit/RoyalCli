@@ -31,7 +31,7 @@ public class Battle : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		frameWorker = new FrameWorker ();
-		RadyAndWaitOpponent ();
+		ReadyAndWaitOpponent ();
 	}
 
 	// Update is called once per frame
@@ -41,7 +41,7 @@ public class Battle : MonoBehaviour {
 
 		SendFrame ();
 
-		if (f_count > 30) {
+		if (f_count >= 30) {
 			RecvFrame ();
 		}
 		f_count++;
@@ -81,7 +81,7 @@ public class Battle : MonoBehaviour {
 		}
 	}
 
-	void RadyAndWaitOpponent () {
+	void ReadyAndWaitOpponent () {
 		frameWorker.send (f_count + "/ready");
 
 		for(int x = 0; x < 20; ++x){
@@ -116,7 +116,7 @@ public class Battle : MonoBehaviour {
 			Time.timeScale = 0;
 			return;
 		}
-		Debug.Log ("msg:" + msg);
+		Debug.Log ("f_count:" + f_count + " msg:" + msg);
 		string[] frames = msg.Split('#');
 
 		// プレイヤー1のフレームデータを処理
