@@ -3,25 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 using System;
-using System.IO;
-using System.Text;
-using System.Net.Sockets;
-
+using System.Threading;
 
 [Serializable]
 public class Frame {
-	public int f_count;
 	public Vector3 point;
-	public bool placed;
 }
 
-public class Battle : MonoBehaviour {
-	string server = "popbits.co.jp";
-	int port = 8080;
 
-	TcpClient client;
-	BinaryReader reader;
-	BinaryWriter writer;
+public class Battle : MonoBehaviour {
 
 	int f_count = 0;
 
@@ -31,6 +21,8 @@ public class Battle : MonoBehaviour {
 	public GameObject Soldier;
 	public Frame currentFrame;
 
+	FrameWorker frameWorker;
+
 	void Awake() {
 		QualitySettings.vSyncCount = 0;
 		Application.targetFrameRate = 30; //30FPSに設定
@@ -38,42 +30,21 @@ public class Battle : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		InitSock ();
-	}
-
-	void InitSock () {
-		client = new TcpClient(server, port);
-		Stream stream = client.GetStream();
-		reader = new BinaryReader(stream);
-		writer = new BinaryWriter(stream);
+		frameWorker = new FrameWorker ();
+		RadyAndWaitOpponent ();
 	}
 
 	// Update is called once per frame
 	void Update () {
-		// 0フレーム目は相手と同期を取ってカウンタを合わせる
-		if (f_count == 0) {
-			ReadyAndWaitOponent ();
-		} else {
-			currentFrame = new Frame () {
-				f_count = f_count,
-				point = Vector3.zero,
-				placed = false
-			};
-			HandleTap ();
-			CommandAndWaitOponent ();
+		currentFrame = null;
+		HandleTap ();
+
+		SendFrame ();
+
+		if (f_count > 30) {
+			RecvFrame ();
 		}
 		f_count++;
-	}
-
-	void ReadyAndWaitOponent () {
-		byte[] dgram = Encoding.UTF8.GetBytes("ready\n");
-		writer.Write(dgram);
-
-		Debug.Log ("waiting...");
-		byte[] bs = new byte[1024];
-		reader.Read(bs, 0, 1024);
-		string message = Encoding.UTF8.GetString(bs);
-		Debug.Log ("message:" + message);
 	}
 
 	void HandleTap ()
@@ -96,17 +67,12 @@ public class Battle : MonoBehaviour {
 
 	void CheckPosition (Vector3 position)
 	{
-		Debug.Log ("tapped");
 		Ray ray = Camera.main.ScreenPointToRay(position);
 		RaycastHit hit = new RaycastHit();
 
 		if (Physics.Raycast (ray, out hit, 2000)) {
-			Debug.Log ("hit something");
-
 			currentFrame = new Frame () {
-				f_count = f_count,
 				point = hit.point,
-				placed = true
 			};
 
 //			GameObject soldier = (GameObject)Instantiate (Soldier, hit.point, new Quaternion ());
@@ -115,34 +81,67 @@ public class Battle : MonoBehaviour {
 		}
 	}
 
-	void CommandAndWaitOponent () {
+	void RadyAndWaitOpponent () {
+		frameWorker.send (f_count + "/ready");
+
+		for(int x = 0; x < 20; ++x){
+			string msg = frameWorker.recv ();
+			if (msg == null) {
+				Debug.Log ("waiting opponent...");
+				Thread.Sleep (1000);
+			} else {
+				Debug.Log ("opponent appear" + msg);
+				return;
+			}
+		}
+		Debug.Log ("no opponent");
+	}
+
+	void SendFrame () {
 		// このプレイヤーのフレームデータを送信
-		string message = JsonUtility.ToJson (currentFrame);
-		Debug.Log (message);
-		byte[] dgram = Encoding.UTF8.GetBytes(message);
+		string message;
+		if (currentFrame == null) {
+			message = f_count + "/-";
+		} else {
+			message = f_count + "/" + JsonUtility.ToJson (currentFrame);
+		}
+		frameWorker.send (message);
+	}
 
-		writer.Write(dgram);
+	void RecvFrame () {
 		// 両方のプレイヤーのフレームデータを処理
-		byte[] bs = new byte[1024];
-		reader.Read(bs, 0, 1024);
-		string recv_message = Encoding.UTF8.GetString(bs);
-
-		string[] frames = recv_message.Split('#');
+		string msg = frameWorker.recv ();
+		if (msg == null) {
+			Debug.Log("msg is null");
+			Time.timeScale = 0;
+			return;
+		}
+		Debug.Log ("msg:" + msg);
+		string[] frames = msg.Split('#');
 
 		// プレイヤー1のフレームデータを処理
-		Frame frame1 = JsonUtility.FromJson<Frame> (frames[0]);
-		if (frame1.placed) {
+		string[] frameP1 = frames[0].Split('/');
+		if (frameP1 [1] != "-") {
+			Frame frame1 = JsonUtility.FromJson<Frame> (frameP1 [1]);
+
 			GameObject soldier = (GameObject)Instantiate (Soldier, frame1.point, new Quaternion ());
 			Soldier s = soldier.GetComponent<Soldier>();
 			s.targetCastle = castle2;
 		}
 
 		// プレイヤー2のフレームデータを処理
-		Frame frame2 = JsonUtility.FromJson<Frame> (frames[1]);
-		if (frame2.placed) {
+		string[] frameP2 = frames[1].Split('/');
+		if (frameP2 [1] != "-") {
+			Frame frame2 = JsonUtility.FromJson<Frame> (frameP2 [1]);
+
 			GameObject soldier = (GameObject)Instantiate (Soldier, frame2.point, new Quaternion ());
 			Soldier s = soldier.GetComponent<Soldier>();
 			s.targetCastle = castle1;
 		}
+	}
+
+	private void OnDestroy()
+	{
+		frameWorker.stop ();
 	}
 }
