@@ -2,14 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Soldier : MonoBehaviour {
-	public GameObject targetCastle;
-	public Animator animator;
+public class Soldier : UnitBase {
 	// Use this for initialization
-	void Start () {
-		animator = GetComponent<Animator>();
+	public override void Start () {
+		base.Start ();
+		SetHp ();
+		InitHpDisplay ();
 	}
-	
+
+	void SetHp () {
+		hp_current = 1000;
+		hp_max = 1000;
+	}
+
 	// Update is called once per frame
 	void Update () {
 		transform.LookAt (targetCastle.transform);

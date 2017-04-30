@@ -13,6 +13,8 @@ public class Frame {
 
 public class Battle : MonoBehaviour {
 
+	bool LOCAL_DEBUG = false;
+
 	int f_count = 0;
 
 	public GameObject castle1;
@@ -30,8 +32,10 @@ public class Battle : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		frameWorker = new FrameWorker ();
-		ReadyAndWaitOpponent ();
+		if (!LOCAL_DEBUG) {
+			frameWorker = new FrameWorker ();
+			ReadyAndWaitOpponent ();
+		}
 	}
 
 	// Update is called once per frame
@@ -39,10 +43,12 @@ public class Battle : MonoBehaviour {
 		currentFrame = null;
 		HandleTap ();
 
-		SendFrame ();
+		if (!LOCAL_DEBUG) {
+			SendFrame ();
 
-		if (f_count >= 30) {
-			RecvFrame ();
+			if (f_count >= 30) {
+				RecvFrame ();
+			}
 		}
 		f_count++;
 	}
@@ -75,9 +81,9 @@ public class Battle : MonoBehaviour {
 				point = hit.point,
 			};
 
-//			GameObject soldier = (GameObject)Instantiate (Soldier, hit.point, new Quaternion ());
-//			Soldier s = soldier.GetComponent<Soldier>();
-//			s.targetCastle = castle2;
+			if (LOCAL_DEBUG) {
+				SpawnUnit (castle1, currentFrame.point);
+			}
 		}
 	}
 
@@ -118,25 +124,28 @@ public class Battle : MonoBehaviour {
 		string[] frameP1 = frames[0].Split('/');
 		if (frameP1 [1] != "-") {
 			Frame frame1 = JsonUtility.FromJson<Frame> (frameP1 [1]);
-
-			GameObject soldier = (GameObject)Instantiate (Soldier, frame1.point, new Quaternion ());
-			Soldier s = soldier.GetComponent<Soldier>();
-			s.targetCastle = castle2;
+			SpawnUnit (castle2, frame1.point);
 		}
 
 		// プレイヤー2のフレームデータを処理
 		string[] frameP2 = frames[1].Split('/');
 		if (frameP2 [1] != "-") {
 			Frame frame2 = JsonUtility.FromJson<Frame> (frameP2 [1]);
-
-			GameObject soldier = (GameObject)Instantiate (Soldier, frame2.point, new Quaternion ());
-			Soldier s = soldier.GetComponent<Soldier>();
-			s.targetCastle = castle1;
+			SpawnUnit (castle1, frame2.point);
 		}
+	}
+		
+	private void SpawnUnit(GameObject targetCastle, Vector3 point)
+	{
+		GameObject soldier = (GameObject)Instantiate (Soldier, point, new Quaternion ());
+		Soldier s = soldier.GetComponent<Soldier>();
+		s.targetCastle = targetCastle;
 	}
 
 	private void OnDestroy()
 	{
-		frameWorker.stop ();
+		if (!LOCAL_DEBUG) {
+			frameWorker.stop ();
+		}
 	}
 }
