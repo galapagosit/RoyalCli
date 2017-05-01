@@ -13,7 +13,8 @@ public class Frame {
 
 public class Battle : MonoBehaviour {
 
-	bool LOCAL_DEBUG = false;
+	bool LOCAL_DEBUG = true;
+	int debug_spawn_cnt = 0;
 
 	int f_count = 0;
 
@@ -82,7 +83,12 @@ public class Battle : MonoBehaviour {
 			};
 
 			if (LOCAL_DEBUG) {
-				SpawnUnit (castle1, currentFrame.point);
+				if (debug_spawn_cnt % 2 == 0) {
+					SpawnUnit (castle2, currentFrame.point);
+				} else {
+					SpawnUnit (castle1, currentFrame.point);
+				}
+				debug_spawn_cnt++;
 			}
 		}
 	}
@@ -140,6 +146,12 @@ public class Battle : MonoBehaviour {
 		GameObject soldier = (GameObject)Instantiate (Soldier, point, new Quaternion ());
 		Soldier s = soldier.GetComponent<Soldier>();
 		s.targetCastle = targetCastle;
+
+		if (targetCastle == castle1) {
+			s.tag = ("unit_p2");
+		} else {
+			s.tag = ("unit_p1");
+		}
 	}
 
 	private void OnDestroy()
