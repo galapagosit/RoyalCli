@@ -4,9 +4,11 @@ using UnityEngine;
 using System.Linq;
 
 public class Soldier : UnitBase {
-	// Use this for initialization
-	public override void Start () {
-		base.Start ();
+
+	int ATTACK = 30;
+
+	void Start () {
+		animator = transform.FindChild ("skeleton_animated").gameObject.GetComponent<Animator>();
 		SetHp ();
 		InitHpDisplay ();
 	}
@@ -53,6 +55,7 @@ public class Soldier : UnitBase {
 		float dis = Vector3.Distance(transform.position, target.transform.position);
 		if (dis < 100) {
 			animator.SetBool ("attack", true);
+			target.SendMessage("AddDamage", ATTACK);
 		} else {
 			transform.position += transform.forward * 1 * 2;
 			animator.SetBool ("attack", false);
