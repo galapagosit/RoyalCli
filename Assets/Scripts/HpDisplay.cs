@@ -17,7 +17,7 @@ public class HpDisplay : MonoBehaviour {
 
 		var tt = transform.FindChild ("Bar").transform;
 		var l_scale = tt.localScale;
-		l_scale.x = 100 * (hp_current / hp_max);
+		l_scale.x = 100 * ((float)hp_current / hp_max);
 		tt.localScale = l_scale;
 	}
 }
