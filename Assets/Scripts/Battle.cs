@@ -160,4 +160,9 @@ public class Battle : MonoBehaviour {
 			frameWorker.stop ();
 		}
 	}
+
+	public void SelectUnit()
+	{
+
+	}
 }
