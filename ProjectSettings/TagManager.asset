@@ -6,6 +6,7 @@ TagManager:
   tags:
   - unit_p1
   - unit_p2
+  - unit_select_button
   layers:
   - Default
   - TransparentFX
