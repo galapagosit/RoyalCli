@@ -21,7 +21,7 @@ public class Battle : MonoBehaviour {
 	public GameObject castle1;
 	public GameObject castle2;
 
-	public GameObject Soldier;
+	public GameObject BigSoldier;
 	public Frame currentFrame;
 
 	FrameWorker frameWorker;
@@ -143,8 +143,8 @@ public class Battle : MonoBehaviour {
 		
 	private void SpawnUnit(GameObject targetCastle, Vector3 point)
 	{
-		GameObject soldier = (GameObject)Instantiate (Soldier, point, new Quaternion ());
-		Soldier s = soldier.GetComponent<Soldier>();
+		GameObject soldier = (GameObject)Instantiate (BigSoldier, point, new Quaternion ());
+		UnitBase s = soldier.GetComponent<UnitBase>();
 		s.targetCastle = targetCastle;
 
 		if (targetCastle == castle1) {

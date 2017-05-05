@@ -522,7 +522,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   castle1: {fileID: 1023126807}
   castle2: {fileID: 65797293}
-  Soldier: {fileID: 1282779473090418, guid: fdb2c44ebe21844aba5ebf099df25eac, type: 2}
+  BigSoldier: {fileID: 1571094240050600, guid: c726d0975ad204d67aa3f91471dd6f4c, type: 2}
   currentFrame:
     point: {x: 0, y: 0, z: 0}
 --- !u!4 &403544175
