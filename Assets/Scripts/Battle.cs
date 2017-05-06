@@ -21,10 +21,14 @@ public class Battle : MonoBehaviour {
 	public GameObject castle1;
 	public GameObject castle2;
 
+	public GameObject Soldier;
 	public GameObject BigSoldier;
+
 	public Frame currentFrame;
 
 	FrameWorker frameWorker;
+
+	public string UnitSelectButtonName = null;
 
 	void Awake() {
 		QualitySettings.vSyncCount = 0;
@@ -143,8 +147,16 @@ public class Battle : MonoBehaviour {
 		
 	private void SpawnUnit(GameObject targetCastle, Vector3 point)
 	{
-		GameObject soldier = (GameObject)Instantiate (BigSoldier, point, new Quaternion ());
-		UnitBase s = soldier.GetComponent<UnitBase>();
+		GameObject unit = null;
+		if (UnitSelectButtonName == "Button1") {
+			unit = (GameObject)Instantiate (Soldier, point, new Quaternion ());
+		} else if (UnitSelectButtonName == "Button2") {
+			unit = (GameObject)Instantiate (BigSoldier, point, new Quaternion ());
+		} else {
+			Debug.Log ("no unit button selected");
+		}
+				
+		UnitBase s = unit.GetComponent<UnitBase>();
 		s.targetCastle = targetCastle;
 
 		if (targetCastle == castle1) {
