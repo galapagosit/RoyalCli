@@ -29,6 +29,11 @@ public class UnitBase : MonoBehaviour {
 		}
 	}
 
+	public virtual int GetCost()
+	{
+		return 300;
+	}
+
 	void LateUpdate()
 	{
 		hpDisplay.GetComponent<HpDisplay>().UpdateHp(hp_current, hp_max);

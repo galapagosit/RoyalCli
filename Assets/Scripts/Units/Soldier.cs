@@ -24,6 +24,11 @@ public class Soldier : UnitBase {
 		MoveAndAttack ();
 	}
 
+	public override int GetCost()
+	{
+		return 100;
+	}
+
 	void DetectTarget() {
 		GameObject[] target_units;
 		if (tag == "unit_p1") {

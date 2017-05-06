@@ -24,6 +24,11 @@ public class BigSoldier : UnitBase {
 		MoveAndAttack ();
 	}
 
+	public override int GetCost()
+	{
+		return 600;
+	}
+
 	void DetectTarget() {
 		GameObject[] target_units;
 		if (tag == "unit_p1") {

@@ -21,6 +21,9 @@ public class Battle : MonoBehaviour {
 	public GameObject castle1;
 	public GameObject castle2;
 
+	public GameObject mana1;
+	public GameObject mana2;
+
 	public GameObject Soldier;
 	public GameObject BigSoldier;
 
@@ -147,23 +150,36 @@ public class Battle : MonoBehaviour {
 		
 	private void SpawnUnit(GameObject targetCastle, Vector3 point)
 	{
-		GameObject unit = null;
+		string unit_tag;
+		GameObject mana;
+		if (targetCastle == castle1) {
+			unit_tag = ("unit_p2");
+			mana = mana2;
+		} else {
+			unit_tag = ("unit_p1");
+			mana = mana1;
+		}
+
+		GameObject Unit = null;
 		if (UnitSelectButtonName == "Button1") {
-			unit = (GameObject)Instantiate (Soldier, point, new Quaternion ());
+			Unit = Soldier;
 		} else if (UnitSelectButtonName == "Button2") {
-			unit = (GameObject)Instantiate (BigSoldier, point, new Quaternion ());
+			Unit = BigSoldier;
 		} else {
 			Debug.Log ("no unit button selected");
 		}
-				
+
+		UnitBase u_base = Unit.GetComponent<UnitBase>();
+		bool used = mana.GetComponent<Mana> ().UseMana (u_base.GetCost());
+		if (!used) {
+			Debug.Log ("mana is not enought");
+			return;
+		}
+
+		GameObject unit = (GameObject)Instantiate (Unit, point, new Quaternion ());
 		UnitBase s = unit.GetComponent<UnitBase>();
 		s.targetCastle = targetCastle;
-
-		if (targetCastle == castle1) {
-			s.tag = ("unit_p2");
-		} else {
-			s.tag = ("unit_p1");
-		}
+		s.tag = unit_tag;
 	}
 
 	private void OnDestroy()
