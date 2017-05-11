@@ -8,12 +8,13 @@ using System.Threading;
 [Serializable]
 public class Frame {
 	public Vector3 point;
+	public string unitSelectButtonName;
 }
 
 
 public class Battle : MonoBehaviour {
 
-	bool LOCAL_DEBUG = true;
+	bool LOCAL_DEBUG = false;
 	int debug_spawn_cnt = 0;
 
 	int f_count = 0;
@@ -87,13 +88,14 @@ public class Battle : MonoBehaviour {
 		if (Physics.Raycast (ray, out hit, 2000)) {
 			currentFrame = new Frame () {
 				point = hit.point,
+				unitSelectButtonName = UnitSelectButtonName,
 			};
 
 			if (LOCAL_DEBUG) {
 				if (debug_spawn_cnt % 2 == 0) {
-					SpawnUnit (castle2, currentFrame.point);
+					SpawnUnit (castle2, currentFrame.point, UnitSelectButtonName);
 				} else {
-					SpawnUnit (castle1, currentFrame.point);
+					SpawnUnit (castle1, currentFrame.point, UnitSelectButtonName);
 				}
 				debug_spawn_cnt++;
 			}
@@ -137,18 +139,18 @@ public class Battle : MonoBehaviour {
 		string[] frameP1 = frames[0].Split('/');
 		if (frameP1 [1] != "-") {
 			Frame frame1 = JsonUtility.FromJson<Frame> (frameP1 [1]);
-			SpawnUnit (castle2, frame1.point);
+			SpawnUnit (castle2, frame1.point, frame1.unitSelectButtonName);
 		}
 
 		// プレイヤー2のフレームデータを処理
 		string[] frameP2 = frames[1].Split('/');
 		if (frameP2 [1] != "-") {
 			Frame frame2 = JsonUtility.FromJson<Frame> (frameP2 [1]);
-			SpawnUnit (castle1, frame2.point);
+			SpawnUnit (castle1, frame2.point, frame2.unitSelectButtonName);
 		}
 	}
 		
-	private void SpawnUnit(GameObject targetCastle, Vector3 point)
+	private void SpawnUnit(GameObject targetCastle, Vector3 point, string unitSelectButtonName)
 	{
 		string unit_tag;
 		GameObject mana;
@@ -161,9 +163,9 @@ public class Battle : MonoBehaviour {
 		}
 
 		GameObject Unit = null;
-		if (UnitSelectButtonName == "Button1") {
+		if (unitSelectButtonName == "Button1") {
 			Unit = Soldier;
-		} else if (UnitSelectButtonName == "Button2") {
+		} else if (unitSelectButtonName == "Button2") {
 			Unit = BigSoldier;
 		} else {
 			Debug.Log ("no unit button selected");
